@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator</title>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/default.css') }}">
+
+</head>
+<body>
+
+    <div class="container">
+        <p><b>Enter expression. For example: 2+3*sqrt(4)</b></p>
+        <div id="calc">
+            <form id="calc_inp_form">
+                <input id="exp_inp" type="text" placeholder="Enter your expression">
+                <button id="btn" type="submit">Calculate</button>
+            </form>
+        </div>
+        <hr>
+        <div id="posts"></div>
+    </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+<script>
+    const socket = io.connect("http://127.0.0.1:5000/");
+
+    let set_display = function (items){
+        for(let i=items.length-1;i>=0;i--){
+            const newPost = document.createElement('div')
+            newPost.innerHTML = "<b>"+items[i]+"</b>";
+            document.getElementById('posts').append(newPost);
+        }
+    }
+
+    let items_flag = localStorage.getItem('item');
+    if(items_flag!=null){
+        let items = items_flag.split("|");
+        set_display(items)
+    }
+
+    let update_display = function(items){
+        let parent = document.getElementById("posts");
+        parent.removeChild(parent.firstChild);
+        console.log(items);
+        items.pop();
+        let newitems = items.join("|")
+        return newitems;
+    }
+
+    socket.on('receive_res_exp', function(data){
+        let prev = localStorage.getItem('item');
+        console.log(prev);
+        let newItem = "" + data["exp"]+" = "+data["res"];
+        if (prev!=null){
+            newItem = newItem+"|"+prev;
+            console.log("hi");
+            let items = newItem.split("|");
+            if(items.length>5){
+                newItem = update_display(items)
+            }
+        }
+        localStorage.setItem('item', newItem );
+        const newPost = document.createElement('div')
+        newPost.innerHTML = `<b> ${data.exp} = ${data.res} </b>`;
+        document.getElementById('posts').append(newPost);
+    })
+
+    let exp_inp = document.getElementById("exp_inp");
+    document.getElementById('calc_inp_form').onsubmit = function (e) {
+        e.preventDefault();
+        let exp = exp_inp.value.trim();
+        if (exp.length){
+            socket.emit('send_exp', {
+                exp: exp,
+            })
+        }
+        exp_inp.value = "";
+        exp_inp.focus();
+    }
+</script>
+</html>
