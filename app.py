@@ -21,4 +21,5 @@ def handle_send_exp(data):
     socketio.emit("receive_res_exp", res)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    #socketio.run(app, debug=True)
+    app.run()
