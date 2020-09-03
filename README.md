@@ -17,6 +17,4 @@ https://api.mathjs.org/
 
 
 ## Deployment
-Not successfull, tried deploying on heroku. 
 https://sezzle-satwik-calculator.herokuapp.com/ 
-Log error: at=error code=H10 desc="App crashed"
