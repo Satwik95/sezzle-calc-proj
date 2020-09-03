@@ -19,5 +19,6 @@ Used local strorage.
 
 
 ## Deployment
-Was not able to deploy succesfully. Error logs: 404 Bad request 
+Not successfull, tried deploying on heroku. 
+https://sezzle-satwik-calculator.herokuapp.com/ 
 
